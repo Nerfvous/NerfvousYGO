@@ -94,7 +94,6 @@ function s.xtrop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.xtrcon(e)
     local c=e:GetHandler()
-    Debug.Message(c:IsReason(REASON_EFFECT))
     return c:IsLocation(LOCATION_FZONE) and c:IsFaceup()
 end
 function s.atklimfil(c,tp)
@@ -104,20 +103,17 @@ function s.atklimcon(e,c)
     if c==nil then return true end
     local tp=c:GetControler()
     local g=Duel.GetMatchingGroupCount(aux.FaceupFilter(s.atklimfil),tp,LOCATION_ONFIELD,0,nil)
-    --Debug.Message(g)
     return g>=2
 end
 function s.atklimit(e,c)
     local tp=c:GetControler()
     local atk=Duel.GetMatchingGroup(s.atklimfil,tp,LOCATION_MZONE,0,nil,tp):GetMaxGroup(Card.GetAttack):GetFirst()
-    --Debug.Message(atk)
     return c:GetAttack()<atk:GetAttack()
 end
 function s.indcon(e,c)
     if c==nil then return true end
     local tp=c:GetControler()
     local g=Duel.GetMatchingGroupCount(aux.FaceupFilter(s.atklimfil),tp,LOCATION_ONFIELD,0,nil)
-    --Debug.Message(g)
     return g>=4
 end
 --Checks if the an event happening to a card is because of battle or effect
@@ -130,7 +126,6 @@ function s.immcon(e,c)
     if c==nil then return true end
     local tp=c:GetControler()
     local g=Duel.GetMatchingGroupCount(aux.FaceupFilter(s.atklimfil),tp,LOCATION_ONFIELD,0,nil)
-    --Debug.Message(g)
     return g>=6
 end
 --Checks if the effect is a monster effect and targets
