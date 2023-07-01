@@ -77,74 +77,24 @@ function s.tpfil(c,tp)
     and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsFaceup()
     and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
---[[ function s.dmgcon(e,tp,eg,ep,ev,re,r,rp)
-    local a=Duel.GetAttacker()
-	local d=Duel.GetAttackTarget()
-    if not d then return false end
-    if d:IsControler(tp) then a,d=d,a
-    end
-    Debug.Message(eg:GetFirst())
-    local atk=eg:IsExists(s.dmgfil,1,nil,1-tp)
-    --local atk=Duel.GetMatchingGroup(s.dmgfil,tp,0,LOCATION_GRAVE,nil):GetFirst()
-    --Debug.Message(atk)
-    --Debug.Message(a:IsAttribute(ATTRIBUTE_LIGHT))
-    return atk and a:IsAttribute(ATTRIBUTE_LIGHT)
-end ]]
---[[ 
-    --this is actually functional but the loop feels weird for me so I opted to filter the cards instead
-    function s.dmgcon(e,tp,eg,ep,ev,re,r,rp)
-    if not eg then return end
-    Debug.Message(eg:GetFirst())
-    for rc in aux.Next(eg) do
-        if rc:IsStatus(STATUS_OPPO_BATTLE) then
-            if (rc:IsControler(tp) or rc:IsPreviousControler(tp)) and rc:IsAttribute(ATTRIBUTE_LIGHT)
-            and rc:IsRelateToBattle() then
-                return true end
-            end
-        end
-    return false
-end ]]
 function s.dmgcon(e,tp,eg,ep,ev,re,r,rp)
     local c=eg:GetFirst()
     return s.tpfil(c,tp)
 end
 function s.dmgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-    --[[ local desc=eg:Filter(Card.IsStatus(c,STATUS_BATTLE_DESTROYED),nil):GetFirst()
-    local tpdam=(desc:GetAttack())/2 ]]
-    --Debug.Message(Card.GetBattledGroup)
-    --Debug.Message(eg:GetFirst():GetBattledGroup())
     local desc=eg:GetFirst():GetBattledGroup()
     local atk=desc:GetFirst()
-    --local atk=eg:Filter(Card.IsControler(1-tp),nil)
-    --Debug.Message(atk)
     local tpdam=(atk:GetBaseAttack())/2
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(tpdam)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,tpdam)
-    --Duel.SetOperationInfo(chainc, category, targets, count, target_player, target_param)
 end
 function s.dmgop(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end
     local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-    --Debug.Message(d)
 	Duel.Damage(p,d,REASON_EFFECT)
 end
---[[ 
-    --does not work in the context of the effect taking place after the battle
-    function s.dmgcon(e,tp,eg,ep,ev,re,r,rp)
-    local a=Duel.GetAttacker()
-	local d=Duel.GetAttackTarget()
-    Debug.Message(a,d)
-	if not d then return false end
-	if d:IsControler(tp) then a,d=d,a end
-    Debug.Message(a:IsStatus(STATUS_BATTLE_DESTROYED))
-    Debug.Message(d:IsStatus(STATUS_BATTLE_DESTROYED))
-    Debug.Message(eg:GetFirst())
-    --Debug.Message(Duel.GetBattleMonster(tp))
-	return a:IsAttribute(ATTRIBUTE_LIGHT)
-		and not a:IsStatus(STATUS_BATTLE_DESTROYED) and d:IsStatus(STATUS_BATTLE_DESTROYED)
-end ]]
 function s.cfilter(c)
     return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_PENDULUM)
     and c:IsRace(RACE_FAIRY) end
@@ -154,15 +104,15 @@ function s.spcon(e,c)
 		and Duel.IsExistingMatchingCard(aux.FaceupFilter(s.cfilter),c:GetControler(),LOCATION_PZONE,0,1,nil)
 end
 function s.datkfil1(c,tp)
-    return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsControler(tp)
-    and c:IsFaceup() and not c:IsHasEffect(EFFECT_EXTRA_ATTACK)
+    return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsFaceup()
+    and not c:IsHasEffect(EFFECT_EXTRA_ATTACK)
 end
 function s.datkt(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsCanBeEffectTarget(e) and s.datkfil1(chkc,tp)
-        and chkc:IsLocation(LOCATION_MZONE) end
-    if chk==0 then return Duel.IsExistingTarget(s.datkfil1,tp,LOCATION_MZONE,0,1,nil,tp) end
+    if chkc then return chkc:IsCanBeEffectTarget(e) and chkc:IsControler(tp)
+    and chkc:IsLocation(LOCATION_MZONE) and s.datkfil1(chkc) end
+    if chk==0 then return Duel.IsExistingTarget(s.datkfil1,tp,LOCATION_MZONE,0,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-    Duel.SelectTarget(tp,s.datkfil1,tp,LOCATION_MZONE,0,1,1,nil,tp)
+    Duel.SelectTarget(tp,s.datkfil1,tp,LOCATION_MZONE,0,1,1,nil)
     Duel.SetTargetPlayer(1-tp)
     Duel.SetTargetParam(1500)
     Duel.SetPossibleOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1500)
@@ -175,7 +125,7 @@ function s.datkop(e,tp,eg,ep,ev,re,r,rp)
     local tc=Duel.GetFirstTarget()
     if tc and tc:IsRelateToEffect(e) then
         --Changed variable within CreateEffect from e:GetHandler (which doesn't make sense to me)
-            --to tc
+        --to tc
         local e1=Effect.CreateEffect(tc)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_EXTRA_ATTACK)
