@@ -129,7 +129,7 @@ function s.monopr(e,tp,eg,ep,ev,re,r,rp)
     return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
     local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.cfilter2),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e):GetFirst()
-    if tc and Duel.MoveToField(tc,tp,0,LOCATION_PZONE,POS_FACEUP,true) 
+    if tc and Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
     and Duel.IsExistingMatchingCard(s.cfilter3,tp,LOCATION_MZONE,0,1,nil)
     and Duel.IsExistingMatchingCard(s.cfilter4,tp,LOCATION_DECK,0,1,nil)
     and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
