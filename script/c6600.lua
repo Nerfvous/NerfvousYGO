@@ -12,7 +12,7 @@ function s.initial_effect(c)
     e1:SetCode(EVENT_FREE_CHAIN) --EVENT_FREE_CHAIN refers to an open gamestate where no effects are activating. This also allows for the effect to be activated during a chain.
     e1:SetProperty(EFFECT_FLAG_CARD_TARGET) --SetProperty changes the property of the effect. EFFECT_FLAG_CARD_TARGET makes it so that the effect only affects face-up cards
     e1:SetRange(LOCATION_PZONE)
-    e1:SetCountLimit(1,id) --Limits the amount of times the effect can be triggered per turn which in this case is hard 1-ce per turn heheh
+    e1:SetCountLimit(1,{id,0}) --Limits the amount of times the effect can be triggered per turn which in this case is hard 1-ce per turn heheh
     e1:SetCondition(Duel.IsMainPhase)
 	e1:SetTarget(s.pentg)
     e1:SetOperation(s.penop)
@@ -86,9 +86,9 @@ function s.penop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local tc=Duel.GetFirstTarget()
-    if not (tc:IsRelateToEffect(e) and tc:IsInMainMZone(tp) and Duel.CheckPendulumZones(tp)) then return end
+    if not tc:IsRelateToEffect(e) and not Duel.CheckPendulumZones(tp) then return end
+    Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-    --Duel.SpecialSummon(tc,nil,tp,tp,true,true,POS_FACEUP)
 	Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 end
 function s.gfilter(e,c)

@@ -1,4 +1,4 @@
---Tea Party Gathering
+--Tea Party - School of Trinity
 --Scripted by Nerfvous
 local s,id=GetID()
 function s.initial_effect(c)
@@ -95,7 +95,7 @@ end
 function s.xtrcon(e)
     local c=e:GetHandler()
     Debug.Message(c:IsReason(REASON_EFFECT))
-    return c:IsLocation(LOCATION_FZONE)
+    return c:IsLocation(LOCATION_FZONE) and c:IsFaceup()
 end
 function s.atklimfil(c,tp)
     return c:IsMonster() and c:IsControler(tp) and c:IsAttribute(ATTRIBUTE_LIGHT)

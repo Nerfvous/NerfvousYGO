@@ -90,7 +90,8 @@ function s.penop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local tc=Duel.GetFirstTarget()
-    if not (tc:IsRelateToEffect(e) and tc:IsInMainMZone(tp) and Duel.CheckPendulumZones(tp)) then return end
+    if not tc:IsRelateToEffect(e) and not Duel.CheckPendulumZones(tp) then return end
+    Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 end
@@ -125,15 +126,15 @@ function s.gfilter2(c)
     return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsOriginalType(TYPE_MONSTER)
 end
 function s.gtarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_ONFIELD)
+    if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE)
     and s.gfilter(chkc) end
-    if chk==0 then return Duel.IsExistingTarget(s.gfilter,tp,0,LOCATION_ONFIELD,1,nil)
+    if chk==0 then return Duel.IsExistingTarget(s.gfilter,tp,0,LOCATION_MZONE,1,nil)
         and Duel.IsPlayerCanSendtoHand(1-tp)
         and Duel.IsExistingMatchingCard(s.gfilter2,tp,LOCATION_ONFIELD,0,1,nil)
     end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
     local gt=Duel.GetMatchingGroupCount(s.gfilter2,tp,LOCATION_ONFIELD,0,nil)
-    local g=Duel.SelectTarget(tp,s.gfilter,tp,0,LOCATION_ONFIELD,1,gt,nil)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+    local g=Duel.SelectTarget(tp,s.gfilter,tp,0,LOCATION_MZONE,1,gt,nil)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function s.gop(e,tp,eg,ep,ev,re,r,rp)
@@ -142,12 +143,12 @@ function s.gop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.cfilter2(c)
     return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_PENDULUM)
-    and c:IsReason(REASON_SPSUMMON|REASON_SUMMON)
+    and c:IsReason(REASON_SPSUMMON+REASON_SUMMON)
 end
 --Checks if any groups of card matching s.cfilter2 exists excluding itself (e:GetHandler())
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
     local g=eg:Filter(s.cfilter2,e:GetHandler())
     for tc in g:Iter() do
-        Duel.RegisterFlagEffect(tc:GetControler(),id,RESET_PHASE|PHASE_END,0,1)
+        Duel.RegisterFlagEffect(tc:GetControler(),id,RESET_PHASE+PHASE_END,0,1)
     end
 end

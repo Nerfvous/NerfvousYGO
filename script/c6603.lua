@@ -35,7 +35,7 @@ function s.initial_effect(c)
 	e4:SetCode(EFFECT_SPSUMMON_PROC)
 	e4:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e4:SetRange(LOCATION_HAND)
-	--e4:SetCountLimit(1,{id,1})
+	e4:SetCountLimit(1,{id,1})
 	e4:SetCondition(s.spcon)
 	c:RegisterEffect(e4)
     --Place "Tea Party" monsters to pendulum zone
@@ -45,9 +45,9 @@ function s.initial_effect(c)
     e5:SetProperty(EFFECT_FLAG_DELAY)
     e5:SetCode(EVENT_SPSUMMON_SUCCESS)
     e5:SetCountLimit(1,{id,2})
-    e5:SetTarget(s.montg)
     e5:SetRange(LOCATION_MZONE)
     e5:SetCost(s.moncost)
+    e5:SetTarget(s.montg)
     e5:SetOperation(s.monopr)
     c:RegisterEffect(e5)
     Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
@@ -84,7 +84,7 @@ function s.cond(e)
     --Debug.Message(c:GetReason()==0)
     --Debug.Message(c:IsReason(REASON_EFFECT))
     return c:IsLocation(LOCATION_PZONE) and c:IsFaceup()
-        and (c:IsReason(REASON_SPSUMMON) or c:GetReason()==0)
+    and not c:IsPreviousLocation(LOCATION_HAND)
 end
 function s.cfilter(c)
     return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_PENDULUM)
@@ -94,8 +94,9 @@ function s.spcon(e,c)
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(aux.FaceupFilter(s.cfilter),c:GetControler(),LOCATION_PZONE,0,1,nil)
 end
-function s.cfilter2(c)
-    return c:IsSetCard(0x294) and c:IsMonster()
+function s.cfilter2(c,e)
+    return c:IsSetCard(0x294) and c:IsMonster() and c:IsLocation(LOCATION_GRAVE)
+    or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()) and not c:IsImmuneToEffect(e)
 end
 function s.cfilter3(c,tp)
     return c:IsLevel(7) and c:IsAttribute(ATTRIBUTE_LIGHT)
@@ -103,20 +104,31 @@ end
 function s.cfilter4(c)
     return c:IsSetCard(0x294) and c:IsLevel(4)
 end
+function s.moncost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0
+    and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.cfilter2),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e) end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetDescription(aux.Stringid(id,4))
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(s.aclimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
 function s.montg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.CheckPendulumZones(tp)
-        --and Debug.Message(Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.cfilter2),tp,LOCATION_GRAVE,0,1,nil,tp))
-        --and Debug.Message(Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_EXTRA,0,1,nil,tp))
-        and (Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_EXTRA,0,1,nil,tp)
-        or Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.cfilter2),tp,LOCATION_GRAVE,0,1,nil,tp))
-        end
+    if chk==0 then return Duel.CheckPendulumZones(tp) end
     Duel.SetPossibleOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE)
     Duel.SetPossibleOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0,nil)
 end
 function s.monopr(e,tp,eg,ep,ev,re,r,rp)
-    if not Duel.CheckPendulumZones(tp) then return end
+    if not Duel.CheckPendulumZones(tp) or
+    Duel.GetMatchingGroupCount(aux.NecroValleyFilter(s.cfilter2),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,nil,e)<1 then
+    return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-    local tc=Duel.SelectMatchingCard(tp,s.cfilter2,tp,LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
+    local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.cfilter2),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e):GetFirst()
     if tc and Duel.MoveToField(tc,tp,0,LOCATION_PZONE,POS_FACEUP,true) 
     and Duel.IsExistingMatchingCard(s.cfilter3,tp,LOCATION_MZONE,0,1,nil)
     and Duel.IsExistingMatchingCard(s.cfilter4,tp,LOCATION_DECK,0,1,nil)
@@ -130,19 +142,6 @@ function s.monopr(e,tp,eg,ep,ev,re,r,rp)
         --Duel.SpecialSummon(targets, sumtype, sumplayer, target_player, nocheck, nolimit, pos)
         Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
     end
-end
-function s.moncost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetDescription(aux.Stringid(id,4))
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(1,0)
-	e1:SetValue(s.aclimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end
 function s.aclimit(e,re,tp)
 	return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsAttribute(ATTRIBUTE_LIGHT)
