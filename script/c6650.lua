@@ -16,7 +16,7 @@ function s.initial_effect(c)
     e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e1:SetRange(LOCATION_PZONE)
     e1:SetCountLimit(1,{id,0})
-    e1:SetCondition(Duel.IsMainPhase)
+    e1:SetCondition()
 	e1:SetTarget(s.pentg)
     e1:SetOperation(s.penop)
     c:RegisterEffect(e1)
@@ -75,6 +75,9 @@ s.listed_series={0x294}
 --Checks if a Light Pendulum faceup card is up (checking if it is a monster is kinda redundant)
 function s.cfilter(c)
     return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_PENDULUM)
+end
+function s.pencon(e,tp)
+    return Duel.IsTurnPlayer(tp)
 end
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp)
