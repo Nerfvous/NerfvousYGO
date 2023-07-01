@@ -39,20 +39,20 @@ function s.initial_effect(c)
     e3:SetOperation(s.excop)
     --e3:SetCondition(s.excond)
     c:RegisterEffect(e3)
-    --Negate activation
+    --Place to deck top
 	local e4=Effect.CreateEffect(c)
     e4:SetDescription(aux.Stringid(id,2))
-	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCategory(CATEGORY_TODECK)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_CHAINING)
-	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	--e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1,{id,2})
+    e4:SetCost(s.discost)
 	e4:SetCondition(s.discon)
 	e4:SetTarget(s.distg)
 	e4:SetOperation(s.disop)
 	c:RegisterEffect(e4)
-	aux.DoubleSnareValidity(c,LOCATION_MZONE)
 end
 s.listed_series={0x294}
 function s.tg(e,c)
@@ -80,7 +80,8 @@ function s.penop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local tc=Duel.GetFirstTarget()
-    if not (tc:IsRelateToEffect(e) and tc:IsInMainMZone(tp) and Duel.CheckPendulumZones(tp)) then return end
+    if not tc:IsRelateToEffect(e) and not Duel.CheckPendulumZones(tp) then return end
+    Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 end
@@ -108,30 +109,31 @@ function s.excop(e,tp,eg,ep,ev,re,r,rp)
     Duel.MoveToDeckBottom(g,tp)
     Duel.SortDeckbottom(tp,tp,#g)
 end
-function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler()~=e:GetHandler() and rp~=e:GetHandlerPlayer()
-        and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
-		and Duel.IsChainNegatable(ev)
-end
 function s.disfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsAbleToDeck() and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
+function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return Duel.IsExistingMatchingCard(s.disfilter,tp,LOCATION_EXTRA+LOCATION_MZONE,0,1,nil) end
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+    local sc=Duel.SelectMatchingCard(tp,s.disfilter,tp,LOCATION_EXTRA+LOCATION_MZONE,0,1,1,nil)
+    Duel.SendtoDeck(sc,tp,SEQ_DECKTOP,REASON_COST)
+end
+function s.discon(e,tp,eg,ep,ev,re,r,rp)
+	return re:GetHandler()~=e:GetHandler() and rp~=tp
+end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.disfilter,tp,LOCATION_EXTRA+LOCATION_MZONE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_EXTRA+LOCATION_MZONE)
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-	end
+	if chk==0 then return true end
+    local rc=re:GetHandler()
+    Duel.SetTargetCard(rc)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,rc,1,0,0)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
+    local rc=Duel.GetTargetCards(e)
+    Debug.Message(rc)
+    if #rc<=0 then return end
+    Debug.Message(#rc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,s.disfilter,tp,LOCATION_EXTRA|LOCATION_MZONE,0,1,1,nil)
-	if Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)~=0 then
-		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.Destroy(eg,REASON_EFFECT)
-		end
-	end
+    Duel.SendtoDeck(rc,1-tp,SEQ_DECKTOP,REASON_EFFECT)
 end
 function s.excond(e,eg)
     return eg==e:GetHandler()
