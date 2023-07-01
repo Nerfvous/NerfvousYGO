@@ -71,6 +71,7 @@ end
 function s.rccon(e)
     local c=e:GetHandler()
     return c:IsLocation(LOCATION_PZONE) and c:IsFaceup()
+    and not c:IsPreviousLocation(LOCATION_HAND)
 end
 function s.tpfil(c,tp)
     return c:IsControler(tp) and c:IsStatus(STATUS_OPPO_BATTLE)
