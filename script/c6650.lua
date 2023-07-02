@@ -139,7 +139,6 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
     local sc=g:Select(1-tp,1,1,nil)
     Duel.HintSelection(sc)
-    --Duel.SendtoDeck(sc,PLAYER_NONE,SEQ_DECKTOP,REASON_RULE)
     Duel.SendtoDeck(sc,PLAYER_NONE,SEQ_DECKTOP,1-tp)
 end
 function s.atmat(c,e)
