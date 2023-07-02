@@ -46,21 +46,6 @@ end
 function s.gtpfilter(c)
     return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsLevel(7)
 end
---[[ function s.gtarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsCanBeEffectTarget(e) and chkc:IsCanTurnSet()
-        and chkc:IsControler(1-tp) and s.gfilter(chkc) end
-    if chk==0 then return Duel.IsExistingTarget(s.gfilter,tp,0,LOCATION_MZONE,1,nil) end
-    local ct=1
-    if Duel.GetMatchingGroupCount(s.gtpfilter,tp,LOCATION_MZONE,0,nil)>=1 then ct=2 end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-    local g=Duel.SelectTarget(tp,s.gfilter,tp,0,LOCATION_MZONE,1,ct,nil)
-    Duel.SetOperationInfo(0,CATEGORY_POSITION,g,#g,0,0)
-end
-function s.gop(e,tp,eg,ep,ev,re,r,rp)
-    if not e:GetHandler():IsRelateToEffect(e) then return end
-    local g=Duel.GetTargetCards(e)
-    Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
-end ]]
 function s.gtarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsControler(1-tp) and chkc:IsCanBeEffectTarget(e)
     and s.gfilter(chkc) end
