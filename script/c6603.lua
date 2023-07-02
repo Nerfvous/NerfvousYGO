@@ -81,8 +81,6 @@ function s.goperation(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.cond(e)
     local c=e:GetHandler()
-    --Debug.Message(c:GetReason()==0)
-    --Debug.Message(c:IsReason(REASON_EFFECT))
     return c:IsLocation(LOCATION_PZONE) and c:IsFaceup()
     and not c:IsPreviousLocation(LOCATION_HAND)
 end
