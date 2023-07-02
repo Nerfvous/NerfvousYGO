@@ -66,13 +66,7 @@ end
 function s.ctarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsControler(1-tp) and s.cfilter(chkc)
         and chkc:IsLocation(LOCATION_MZONE) and chkc:IsCanBeEffectTarget(e)
-        and chkc:IsFaceup()
-        --[[ and Debug.Message(chkc:IsControler(1-tp),s.cfilter(chkc)
-    ,chkc:IsLocation(LOCATION_MZONE),chkc:IsCanBeEffectTarget(e)
-    ,chkc:IsFaceup()) ]]
-    end
-    --Duel.IsExistingTarget(aux.FaceupFilter(s.gfilter),tp,0,LOCATION_MZONE,1,nil)
-    --Debug.Message(Duel.IsExistingTarget(aux.FaceupFilter(Card.IsMonster),tp,0,LOCATION_MZONE,1,nil))
+        and chkc:IsFaceup() end
     if chk==0 then return Duel.IsExistingTarget(aux.FaceupFilter(Card.IsMonster),tp,0,LOCATION_MZONE,1,nil)
     end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
@@ -92,7 +86,6 @@ function s.coperation(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function s.extracon(c,e,tp,sg,mg,lc,chk)
-    --Debug.Message(s.flagcheck(e:GetHandler()))
 	return sg:FilterCount(s.flagcheck,nil)<2
 end
 function s.flagcheck(c)
