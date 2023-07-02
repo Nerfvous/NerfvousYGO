@@ -107,7 +107,6 @@ function s.spellop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
     local tc=Duel.SelectMatchingCard(tp,s.spellfil,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
-    Debug.Message(tc:IsType(TYPE_FIELD))
     if tc and tc:IsType(TYPE_FIELD) then
         local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
         if fc then
