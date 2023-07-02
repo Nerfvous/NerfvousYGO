@@ -129,9 +129,7 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
     local rc=Duel.GetTargetCards(e)
-    Debug.Message(rc)
     if #rc<=0 then return end
-    Debug.Message(#rc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
     Duel.SendtoDeck(rc,1-tp,SEQ_DECKTOP,REASON_EFFECT)
 end
