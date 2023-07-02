@@ -67,7 +67,6 @@ end
 function s.cop(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end
     local tc=Duel.GetFirstTarget()
-    Debug.Message(Duel.IsExistingMatchingCard(s.cdeckfil,tp,LOCATION_DECK,0,1,nil))
     if Duel.SendtoExtraP(tc,tp,REASON_EFFECT)
         and Duel.IsExistingMatchingCard(s.cdeckfil,tp,LOCATION_DECK,0,1,nil)
         and Duel.CheckPendulumZones(tp) then
