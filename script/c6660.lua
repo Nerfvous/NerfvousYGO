@@ -34,9 +34,6 @@ s.listed_series={0x294}
 function s.rathfil(c)
     return c:IsLevel(7) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
---[[ function s.rathcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(s.rathfil,tp,LOCATION_DECK,0,3,nil) end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND) ]]
 function s.ratht(e,tp,eg,ep,ev,re,r,rp,chk)
     local g=Duel.GetMatchingGroup(s.rathfil,tp,LOCATION_DECK,0,nil)
     if chk==0 then
