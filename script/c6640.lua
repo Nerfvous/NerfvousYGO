@@ -61,6 +61,7 @@ function s.montarget(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.monoperate(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
     local tc=Duel.SelectMatchingCard(tp,s.mdeck,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
     if c and tc then
         aux.ToHandOrElse(tc,tp,function(c) 
@@ -95,6 +96,7 @@ function s.coperate(e,tp,eg,ep,ev,re,r,rp)
         and Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_MZONE,0,1,nil)
         and Duel.SelectYesNo(tp,aux.Stringid(id,4))then
             Duel.BreakEffect()
+            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
             local tograve=Duel.SelectMatchingCard(tp,s.tograve,tp,LOCATION_DECK,0,1,1,nil)
             Duel.SendtoGrave(tograve,REASON_EFFECT)
         end

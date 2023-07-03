@@ -96,7 +96,7 @@ function s.cfilter2(c,e)
     return c:IsSetCard(0x294) and c:IsMonster() and c:IsLocation(LOCATION_GRAVE)
     or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()) and not c:IsImmuneToEffect(e)
 end
-function s.cfilter3(c,tp)
+function s.cfilter3(c)
     return c:IsLevel(7) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
 function s.cfilter4(c)
@@ -104,8 +104,7 @@ function s.cfilter4(c)
 end
 function s.moncost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0
-    and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.cfilter2),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e) end
+	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT)
@@ -117,7 +116,8 @@ function s.moncost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.montg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.CheckPendulumZones(tp) end
+    if chk==0 then return Duel.CheckPendulumZones(tp)
+    and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.cfilter2),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e) end
     Duel.SetPossibleOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE)
     Duel.SetPossibleOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0,nil)
 end
@@ -133,11 +133,9 @@ function s.monopr(e,tp,eg,ep,ev,re,r,rp)
     and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
     and Duel.IsPlayerCanSpecialSummon(tp)
     and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-        --Duel.MoveToField(tc,tp,0,LOCATION_PZONE,POS_FACEUP,true)
         Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
         local sc=Duel.SelectMatchingCard(tp,s.cfilter4,tp,LOCATION_DECK,0,1,1,nil)
-        --Duel.SpecialSummon(targets, sumtype, sumplayer, target_player, nocheck, nolimit, pos)
         Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
     end
 end

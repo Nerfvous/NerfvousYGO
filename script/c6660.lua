@@ -57,7 +57,7 @@ end
 function s.rathop(e,tp,eg,ep,ev,re,r,rp)
     local sg=Duel.GrabSelectedCard()
     Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
-    local tg=sg:Select(1-tp,1,1,nil)
+    local tg=sg:RandomSelect(1-tp,1)
     local tc=tg:GetFirst()
     Duel.SendtoHand(tc,nil,REASON_EFFECT)
 end

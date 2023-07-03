@@ -72,6 +72,7 @@ function s.cop(e,tp,eg,ep,ev,re,r,rp)
         and Duel.CheckPendulumZones(tp) then
         Duel.BreakEffect()
         local notc=Duel.GetMatchingGroup(s.cdeckfil,tp,LOCATION_DECK,0,tc:GetCode(),tp)
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
         local ct=notc:Select(tp,1,1,tc:GetCode(),tp):GetFirst()
         Duel.MoveToField(ct,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
         end

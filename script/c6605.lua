@@ -71,7 +71,6 @@ end
 function s.rccon(e)
     local c=e:GetHandler()
     return c:IsLocation(LOCATION_PZONE) and c:IsFaceup()
-    and not c:IsPreviousLocation(LOCATION_HAND)
 end
 function s.tpfil(c,tp)
     return c:IsControler(tp) and c:IsStatus(STATUS_OPPO_BATTLE)
@@ -124,19 +123,17 @@ function s.datkfil2(c,tp)
 end
 function s.datkop(e,tp,eg,ep,ev,re,r,rp)
     local tc=Duel.GetFirstTarget()
-    if tc and tc:IsRelateToEffect(e) then
-        --Changed variable within CreateEffect from e:GetHandler (which doesn't make sense to me)
-        --to tc
-        local e1=Effect.CreateEffect(tc)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_EXTRA_ATTACK)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-	end
+    if not tc or not tc:IsRelateToEffect(e) then return end
+    --Changed variable within CreateEffect from e:GetHandler (which doesn't make sense to me) to tc
+    local e1=Effect.CreateEffect(tc)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_EXTRA_ATTACK)
+	e1:SetValue(1)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	tc:RegisterEffect(e1)
     if Duel.IsExistingMatchingCard(s.datkfil2,tp,LOCATION_MZONE,0,1,nil,tp) then
         Duel.BreakEffect()
-        local p,d=Duel.GetChainInfo(CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+        local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
         Duel.Damage(p,d,REASON_EFFECT)
     end
 end

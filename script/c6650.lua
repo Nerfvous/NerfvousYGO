@@ -100,11 +100,12 @@ function s.penop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 end
 function s.confil(c,e)
+    local tp=e:GetHandlerPlayer()
     return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_PENDULUM)
-    and c:IsLevel(7)
+    and c:IsLevel(7) and c:IsControler(tp)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-    return eg:IsExists(s.confil,1,nil,tp)
+    return eg:IsExists(s.confil,1,nil,e)
 end
 function s.sptc(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end
@@ -138,6 +139,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetMatchingGroup(Card.IsMonster,tp,0,LOCATION_MZONE,nil)
     Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
     local sc=g:Select(1-tp,1,1,nil)
+    --Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
     Duel.HintSelection(sc)
     Duel.SendtoDeck(sc,PLAYER_NONE,SEQ_DECKTOP,1-tp)
 end

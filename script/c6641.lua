@@ -88,6 +88,7 @@ function s.xtrop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.IsExistingMatchingCard(s.sndfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,tp)
         and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
         Duel.BreakEffect()
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
         local ct=Duel.SelectMatchingCard(tp,s.sndfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil,tp)
         Duel.SendtoExtraP(ct,tp,REASON_EFFECT)
     end

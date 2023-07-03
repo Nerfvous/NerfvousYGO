@@ -123,30 +123,29 @@ function s.spcon(e,c)
 		and Duel.IsExistingMatchingCard(aux.FaceupFilter(s.cfilter),c:GetControler(),LOCATION_PZONE,0,1,nil)
 end
 function s.atkfil(c,tp)
-    return c:IsType(TYPE_MONSTER) and c:IsControler(tp)
-        and c:IsAttribute(ATTRIBUTE_LIGHT)
+    return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
 function s.gfil(c)
     return c:IsMonster()
 end
 function s.atktc(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsCanBeEffectTarget(e) and s.atkfil(chkc,tp)
+    if chkc then return chkc:IsCanBeEffectTarget(e)
+    and chkc:IsControler(tp) and s.atkfil(chkc)
     end
-    if chk==0 then return Duel.IsExistingTarget(s.atkfil,tp,LOCATION_MZONE,0,1,nil,tp)
-        and Duel.IsExistingMatchingCard(aux.FaceupFilter(s.gfil),tp,0,LOCATION_MZONE,1,nil,tp)
+    if chk==0 then return Duel.IsExistingTarget(s.atkfil,tp,LOCATION_MZONE,0,1,nil)
+        and Duel.IsExistingMatchingCard(aux.FaceupFilter(s.gfil),tp,0,LOCATION_MZONE,1,nil)
     end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-    --Duel.SelectTarget(sel_player, f, player, s, o, min, max)
     local tc=Duel.SelectTarget(tp,s.atkfil,tp,LOCATION_MZONE,0,1,1,nil,tp):GetFirst()
     local dmgl=-(tc:GetAttack())
-    local g=Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsMonster),tp,0,LOCATION_MZONE,nil,tp)
+    local g=Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsMonster),tp,0,LOCATION_MZONE,nil)
     Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,g,#g,1-tp,dmgl)
     Duel.SetPossibleOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
     local tc=Duel.GetFirstTarget()
     if not tc and not tc:IsRelateToEffect(e) then return end
-    local g=Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsMonster),tp,0,LOCATION_MZONE,nil,tp)
+    local g=Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsMonster),tp,0,LOCATION_MZONE,nil)
     local dmgl=-(tc:GetAttack())
     for ct in aux.Next(g) do
         local e1=Effect.CreateEffect(ct)
@@ -157,7 +156,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
         ct:RegisterEffect(e1)
     end
     --Duel.IsExistingMatchingCard(f, player, s, o, count, ex, ...)
-    if Duel.IsExistingMatchingCard(aux.FaceupFilter(s.atkfil,tp),tp,LOCATION_MZONE,0,1,nil)
+    if Duel.IsExistingMatchingCard(aux.FaceupFilter(s.atkfil),tp,LOCATION_MZONE,0,1,nil)
         and Duel.IsPlayerCanDraw(tp) then
         Duel.BreakEffect()
         Duel.Draw(tp,1,REASON_EFFECT)
