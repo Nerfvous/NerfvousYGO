@@ -58,7 +58,7 @@ end
 s.listed_series={0x294}
 function s.ccond(e)
     local c=e:GetHandler()
-    return c:IsLocation(LOCATION_PZONE) and c:IsFaceup()
+    return c:IsLocation(LOCATION_PZONE) and c:IsFaceup() and not c:IsPreviousLocation(LOCATION_HAND)
 end
 function s.cfilter(c)
     return c:IsType(TYPE_MONSTER)
