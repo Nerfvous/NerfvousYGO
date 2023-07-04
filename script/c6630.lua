@@ -66,9 +66,10 @@ function s.gtarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		e:SetOperation(nil)
     end
 end
-function s.cond(e)
+function s.cond(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     return c:IsLocation(LOCATION_SZONE) and c:IsFaceup()
+    and Duel.IsExistingTarget(s.gfilter,tp,0,LOCATION_MZONE,1,nil)
 end
 function s.gop(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end

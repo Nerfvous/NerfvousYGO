@@ -77,9 +77,10 @@ function s.cop(e,tp,eg,ep,ev,re,r,rp)
         Duel.MoveToField(ct,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
         end
 end
-function s.ccond(e)
+function s.ccond(e,tp)
     local c=e:GetHandler()
     return c:IsLocation(LOCATION_SZONE) and c:IsFaceup()
+    and Duel.IsExistingTarget(s.cpenfil,tp,LOCATION_PZONE,0,1,nil)
 end
 --Only affect faceup spells/traps
 function s.indtg(e,c)

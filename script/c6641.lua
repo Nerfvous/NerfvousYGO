@@ -5,18 +5,16 @@ function s.initial_effect(c)
     --Add 1 "Tea Party" face-up monster from extra deck
     local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(id,0))
-    e1:SetCategory(CATEGORY_TOHAND+CATEGORY_TOEXTRA)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
     e1:SetCountLimit(1,{id,0})
-    e1:SetOperation(s.xtrop)
+    e1:SetTarget(s.xtrtg)
     c:RegisterEffect(e1)
     --When placed faceup
     local e2=e1:Clone()
     e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
     e2:SetProperty(EFFECT_FLAG_DELAY)
     e2:SetCode(EVENT_MOVE)
-    e2:SetTarget(s.xtrtg)
     e2:SetCondition(s.xtrcon)
     c:RegisterEffect(e2)
     --Attacks highest atk
@@ -71,31 +69,37 @@ end
 function s.sndfil(c)
     return c:IsType(TYPE_MONSTER+TYPE_PENDULUM) and c:IsAbleToExtra()
 end
---This is needed so that the effect will not trigger if no faceup Light Pendulum monsters are in the ED
 function s.xtrtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(s.xtrfil,tp,LOCATION_EXTRA,0,1,nil,tp)
-    and Duel.IsPlayerCanSendtoHand(tp)
+    if chk==0 then return true end
+    if Duel.IsExistingMatchingCard(s.xtrfil,tp,LOCATION_EXTRA,0,1,nil)
+    and Duel.IsPlayerCanSendtoHand(tp) then
+        e:SetCategory(CATEGORY_TOHAND+CATEGORY_TOEXTRA)
+        e:SetOperation(s.xtrop)
+    else
+        e:SetCategory(0)
+        e:SetOperation(nil)
     end
 end
 function s.xtrop(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end
-    local g=Duel.GetMatchingGroup(s.xtrfil,tp,LOCATION_EXTRA,0,nil,tp)
+    local g=Duel.GetMatchingGroup(s.xtrfil,tp,LOCATION_EXTRA,0,nil)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
     if #g<1 or Duel.SelectYesNo(tp,aux.Stringid(id,0))==false or not Duel.IsPlayerCanSendtoHand(tp)
         or Duel.SendtoHand(g:Select(tp,1,1,nil,tp),tp,REASON_EFFECT,nil,tp)<1  then
     return end
     Duel.ConfirmCards(1-tp,g)
-    if Duel.IsExistingMatchingCard(s.sndfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,tp)
+    if Duel.IsExistingMatchingCard(s.sndfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil)
         and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
         Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-        local ct=Duel.SelectMatchingCard(tp,s.sndfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil,tp)
+        local ct=Duel.SelectMatchingCard(tp,s.sndfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
         Duel.SendtoExtraP(ct,tp,REASON_EFFECT)
     end
 end
-function s.xtrcon(e)
+function s.xtrcon(e,tp)
     local c=e:GetHandler()
     return c:IsLocation(LOCATION_FZONE) and c:IsFaceup()
+    and Duel.IsExistingMatchingCard(s.xtrfil,tp,LOCATION_EXTRA,0,1,nil)
 end
 function s.atklimfil(c,tp)
     return c:IsMonster() and c:IsControler(tp) and c:IsAttribute(ATTRIBUTE_LIGHT)

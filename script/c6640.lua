@@ -59,6 +59,11 @@ function s.montarget(e,tp,eg,ep,ev,re,r,rp,chk)
         e:SetOperation(nil)
     end
 end
+function s.cond(e,tp)
+    local c=e:GetHandler()
+    return c:IsLocation(LOCATION_SZONE) and c:IsFaceup()
+    and Duel.IsExistingMatchingCard(s.mdeck,tp,LOCATION_DECK,0,1,nil)
+end
 function s.monoperate(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -110,8 +115,4 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
     if c:IsRelateToEffect(e) then
         Duel.SendtoDeck(c,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
     end
-end
-function s.cond(e)
-    local c=e:GetHandler()
-    return c:IsLocation(LOCATION_SZONE) and c:IsFaceup()
 end
