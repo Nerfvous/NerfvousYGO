@@ -75,6 +75,8 @@ function s.xtrtg(e,tp,eg,ep,ev,re,r,rp,chk)
     and Duel.IsPlayerCanSendtoHand(tp) then
         e:SetCategory(CATEGORY_TOHAND+CATEGORY_TOEXTRA)
         e:SetOperation(s.xtrop)
+        Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_EXTRA)
+        Duel.SetPossibleOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_PZONE)
     else
         e:SetCategory(0)
         e:SetOperation(nil)
@@ -134,12 +136,12 @@ function s.immcon(e,c)
     return g>=6
 end
 --Checks if the effect is a monster effect and targets
-function s.immval(e,te,re)
+function s.immval(e,te)
     local c=te:GetHandler()
-	if not c:IsType(TYPE_MONSTER) or e:GetOwnerPlayer()==re:GetOwnerPlayer() then return false end
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or not g:IsContains(e:GetHandler())
+    if not c:IsType(TYPE_MONSTER) or e:GetOwnerPlayer()==te:GetOwnerPlayer() then return false end
+    if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
+    local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+    return not g or not g:IsContains(e:GetHandler())
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end
