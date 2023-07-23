@@ -68,7 +68,8 @@ function s.spnscost(e,tp,eg,ep,ev,re,r,rp,chk)
     and Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil) end
     local ct=1
     if Duel.IsPlayerCanSpecialSummon(tp)
-    and Duel.IsExistingMatchingCard(s.monfil,tp,LOCATION_DECK,0,1,nil,e,tp) then ct=2 end
+    and Duel.IsExistingMatchingCard(s.monfil,tp,LOCATION_DECK,0,1,nil,e,tp)
+    and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then ct=2 end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local g=Duel.SelectMatchingCard(tp,s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,ct,nil)
     e:SetLabel(#g)

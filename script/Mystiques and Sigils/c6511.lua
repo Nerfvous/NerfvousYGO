@@ -2,23 +2,18 @@
 --Scripted by Nerfvous
 local s,id=GetID()
 function s.initial_effect(c)
-    --Activation
+    --Special summon
     local e1=Effect.CreateEffect(c)
+    e1:SetDescription(aux.Stringid(id,0))
+    e1:SetCategory(CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
+    e1:SetRange(LOCATION_HAND)
+    e1:SetCountLimit(1,id)
+    e1:SetCost(s.spcost)
+    e1:SetTarget(s.spt)
+    e1:SetOperation(s.spop)
     c:RegisterEffect(e1)
-    --Special summon
-    local e2=Effect.CreateEffect(c)
-    e2:SetDescription(aux.Stringid(id,0))
-    e2:SetCategory(CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
-    e2:SetType(EFFECT_TYPE_IGNITION)
-    e2:SetCode(EVENT_FREE_CHAIN)
-    e2:SetRange(LOCATION_SZONE)
-    e2:SetCountLimit(1,id)
-    e2:SetCost(s.spcost)
-    e2:SetTarget(s.spt)
-    e2:SetOperation(s.spop)
-    c:RegisterEffect(e2)
     Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
     --Add to hand
     local e3=Effect.CreateEffect(c)
@@ -26,7 +21,7 @@ function s.initial_effect(c)
     e3:SetCategory(CATEGORY_LEAVE_GRAVE+CATEGORY_TOHAND+CATEGORY_TODECK)
     e3:SetType(EFFECT_TYPE_IGNITION)
     e3:SetCode(EVENT_FREE_CHAIN)
-    e3:SetRange(LOCATION_SZONE)
+    e3:SetRange(LOCATION_GRAVE)
     e3:SetCountLimit(1,id)
     e3:SetTarget(s.plct)
     e3:SetOperation(s.plcop)
@@ -82,10 +77,10 @@ end
 function s.plct(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsCanBeEffectTarget(e)
     and chkc:IsFaceup() and s.cfilter(chkc) end
-    if chk==0 then return Duel.IsExistingTarget(aux.FaceupFilter(s.cfilter),tp,LOCATION_GRAVE,0,1,nil)
+    if chk==0 then return Duel.IsExistingTarget(aux.FaceupFilter(s.cfilter),tp,LOCATION_GRAVE,0,1,e:GetHandler())
     and Duel.IsPlayerCanSendtoHand(tp) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-    local sc=Duel.SelectTarget(tp,aux.FaceupFilter(s.cfilter),tp,LOCATION_GRAVE,0,1,1,nil)
+    local sc=Duel.SelectTarget(tp,aux.FaceupFilter(s.cfilter),tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
     Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE+CATEGORY_TOHAND+CATEGORY_TODECK,sc,1,tp,LOCATION_GRAVE)
 end
 function s.plcop(e,tp,eg,ep,ev,re,r,rp)

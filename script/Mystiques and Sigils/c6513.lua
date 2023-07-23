@@ -1,4 +1,5 @@
 --Ascended Mystique Rita
+--Scripted by Nerfvous
 local s,id=GetID()
 function s.initial_effect(c)
     c:EnableReviveLimit()
@@ -33,13 +34,14 @@ function s.initial_effect(c)
     local e3=Effect.CreateEffect(c)
     e3:SetDescription(aux.Stringid(id,2))
     e3:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
-    e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+    e3:SetType(EFFECT_TYPE_QUICK_O)
     e3:SetCode(EVENT_CHAINING)
-    e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+    e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
     e3:SetRange(LOCATION_MZONE)
     e3:SetCountLimit(1,{id,2})
     e3:SetCost(s.ngtcost)
     e3:SetCondition(s.ngtcon)
+    e3:SetTarget(s.ngtt)
     e3:SetOperation(s.ngtop)
     c:RegisterEffect(e3)
 end
@@ -109,11 +111,20 @@ function s.ngtcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SendtoDeck(sg,tp,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function s.ngtcon(e,tp,eg,ep,ev,re,r,rp)
+    if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
     return ep~=tp and re:IsSpellTrapEffect() and Duel.IsChainDisablable(ev)
 end
+function s.ngtt(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return true end
+    Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+    if Duel.IsExistingMatchingCard(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) then
+        Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
+    end
+end
 function s.ngtop(e,tp,eg,ep,ev,re,r,rp)
-    local g=Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsCanBeEffectTarget,e),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-    if Duel.NegateEffect(ev) and #g>0 then
+    local g=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
+    if Duel.NegateEffect(ev) and #g>0
+    and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
         Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
         local sc=g:Select(tp,1,1,nil)

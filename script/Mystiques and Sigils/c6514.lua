@@ -37,6 +37,7 @@ function s.initial_effect(c)
     e3:SetType(EFFECT_TYPE_IGNITION)
     e3:SetCode(EVENT_FREE_CHAIN)
     e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+    e3:SetRange(LOCATION_MZONE)
     e3:SetCountLimit(1,{id,2})
     e3:SetCost(s.spcost)
     e3:SetTarget(s.spt)
@@ -99,7 +100,7 @@ function s.dstt(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.dstop(e,tp,eg,ep,ev,re,r,rp)
     local sg=Duel.GetTargetCards(e)
-    if sg>0 then
+    if #sg>0 then
         Duel.Destroy(sg,REASON_EFFECT)
     end
 end
@@ -129,7 +130,7 @@ function s.spt(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
     local sg=Duel.GetTargetCards(e)
-    if sg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+    if #sg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
         Duel.SpecialSummon(sg,0,tp,0,false,false,POS_FACEUP)
     end
 end
