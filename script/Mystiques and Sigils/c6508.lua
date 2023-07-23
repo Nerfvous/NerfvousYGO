@@ -41,7 +41,7 @@ function s.initial_effect(c)
 end
 s.listed_series={0x28c}
 function s.stval(e,re,rp,tp)
-    return aux.tgoval(e,re:IsActiveType(TYPE_SPELL+TYPE_TRAP),rp)
+    return aux.tgoval(e,re:IsSpellTrapEffect(),rp)
 end
 function s.dcon(e,tp,eg,ep,ev,re,r,rp)
     return Duel.IsPlayerCanDraw(tp)
