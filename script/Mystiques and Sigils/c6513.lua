@@ -35,7 +35,7 @@ function s.initial_effect(c)
     e3:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
     e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
     e3:SetCode(EVENT_CHAINING)
-    e3:SetProperty(EFFECT_FLAG_DELAY)
+    e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
     e3:SetRange(LOCATION_MZONE)
     e3:SetCountLimit(1,{id,2})
     e3:SetCost(s.ngtcost)
@@ -103,15 +103,13 @@ function s.ngtfil(c)
 end
 function s.ngtcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return
-    Duel.IsExistingMatchingCard(aux.FaceupFilter(s.ngtfil),tp,LOCATION_REMOVED,0,2,nil)
-    and Duel.IsPlayerCanSendtoDeck(tp)
-    and Duel.IsChainDisablable(ev) end
+    Duel.IsExistingMatchingCard(aux.FaceupFilter(s.ngtfil),tp,LOCATION_REMOVED,0,2,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
     local sg=Duel.SelectMatchingCard(tp,aux.FaceupFilter(s.ngtfil),tp,LOCATION_REMOVED,0,2,2,nil)
     Duel.SendtoDeck(sg,tp,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function s.ngtcon(e,tp,eg,ep,ev,re,r,rp)
-    return ep~=tp
+    return ep~=tp and re:IsSpellTrapEffect() and Duel.IsChainDisablable(ev)
 end
 function s.ngtop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsCanBeEffectTarget,e),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
