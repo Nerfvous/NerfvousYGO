@@ -52,11 +52,16 @@ function s.costfil(c)
 end
 --Sends up to 2 spell/trap to the GY
 function s.adbcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsPlayerCanSendtoGrave(tp)
-    and Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil) end
-    local ct=1
-    if Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsAbleToRemove),tp,0,LOCATION_GRAVE,1,nil) then
-        ct=2 end
+    if chk==0 then
+        local ct=0
+        if Duel.IsPlayerCanSendtoGrave(tp)
+        and Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil)
+        then local ct=1 end
+        if Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsAbleToRemove),tp,0,LOCATION_GRAVE,1,nil)
+        then ct=ct+1 end
+        e:SetLabel(ct)
+        return ct~=0
+    end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local g=Duel.SelectMatchingCard(tp,s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,ct,nil)
     e:SetLabel(#g)

@@ -64,12 +64,18 @@ function s.monfil2(c,e,attrib)
     return not c:IsAttribute(attrib) and c:IsMonster()
 end
 function s.spnscost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsPlayerCanSendtoGrave(tp)
-    and Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil) end
-    local ct=1
-    if Duel.IsPlayerCanSpecialSummon(tp)
-    and Duel.IsExistingMatchingCard(s.monfil,tp,LOCATION_DECK,0,1,nil,e,tp)
-    and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then ct=2 end
+    if chk==0 then
+        local ct=0
+        if Duel.IsPlayerCanSendtoGrave(tp)
+        and Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil)
+        then ct=ct+1 end
+        if Duel.IsPlayerCanSpecialSummon(tp)
+        and Duel.IsExistingMatchingCard(s.monfil,tp,LOCATION_DECK,0,1,nil,e,tp)
+        and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then ct=ct+1 end
+        e:SetLabel(ct)
+        return ct~=0
+    end
+    local ct=e:GetLabel()
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local g=Duel.SelectMatchingCard(tp,s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,ct,nil)
     e:SetLabel(#g)
