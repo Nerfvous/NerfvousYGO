@@ -30,20 +30,16 @@ function s.monfil(c)
     and c:IsAbleToHand() and not c:IsForbidden()
 end
 function s.rvt(e,tp,eg,ep,ev,re,r,rp,chk)
-    local g=Duel.GetMatchingGroup(s.monfil,tp,LOCATION_DECK,0,nil):GetClassCount(Card.GetCode)
-    if chk==0 then return g>=4 and Duel.IsPlayerCanSendtoHand(tp) end
+    local g=Duel.GetMatchingGroup(s.monfil,tp,LOCATION_DECK,0,nil)
+    if chk==0 then return aux.SelectUnselectGroup(g,e,tp,4,4,aux.dncheck,0)
+    and Duel.IsPlayerCanSendtoHand(tp) end
     Duel.SetOperationInfo(0,CATEGORY_SEARCH+CATEGORY_TOHAND,nil,4,tp,LOCATION_DECK)
-end
-function s.rescon(sg,e,tp,mg,c)
-    local c1=sg:GetClassCount(Card.GetCode)
-    local c2=#sg
-    return c1==c2,c1~=c2
 end
 function s.rvop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetMatchingGroup(s.monfil,tp,LOCATION_DECK,0,nil)
-    if g:GetClassCount(Card.GetCode)<4 or Duel.IsPlayerCanSendtoHand(tp)==false then return end
+    if not aux.SelectUnselectGroup(g,e,tp,5,5,aux.dncheck,0) or Duel.IsPlayerCanSendtoHand(tp)==false then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-    local sg=aux.SelectUnselectGroup(g,e,tp,4,4,s.rescon,1,tp,HINTMSG_ATOHAND)
+    local sg=aux.SelectUnselectGroup(g,e,tp,4,4,aux.dncheck,1,tp,HINTMSG_ATOHAND)
     Duel.ConfirmCards(1-tp,sg)
     Duel.ShuffleDeck(tp)
     if sg:GetClassCount(Card.GetAttribute)==4 then
