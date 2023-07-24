@@ -100,6 +100,7 @@ function s.bnsht(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     and Duel.IsPlayerCanRemove(tp) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
     local sg=Duel.SelectTarget(tp,aux.FaceupFilter(Card.IsCanBeEffectTarget,e),tp,0,LOCATION_GRAVE,1,g,nil)
+    Duel.SetTargetCard(sg)
     Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
 end
 function s.bnshop(e,tp,eg,ep,ev,re,r,rp)
