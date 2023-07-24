@@ -18,7 +18,7 @@ function s.initial_effect(c)
     e2:SetType(EFFECT_TYPE_IGNITION)
     e2:SetCode(EVENT_FREE_CHAIN)
     e2:SetRange(LOCATION_GRAVE)
-    e2:SetCountLimit(1,{id,1})
+    e2:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
     e2:SetCost(s.bncost)
     e2:SetTarget(s.bnt)
     e2:SetOperation(s.bnop)
@@ -37,7 +37,7 @@ function s.rvt(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.rvop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetMatchingGroup(s.monfil,tp,LOCATION_DECK,0,nil)
-    if not aux.SelectUnselectGroup(g,e,tp,5,5,aux.dncheck,0) or Duel.IsPlayerCanSendtoHand(tp)==false then return end
+    if not aux.SelectUnselectGroup(g,e,tp,4,4,aux.dncheck,0) or Duel.IsPlayerCanSendtoHand(tp)==false then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
     local sg=aux.SelectUnselectGroup(g,e,tp,4,4,aux.dncheck,1,tp,HINTMSG_ATOHAND)
     Duel.ConfirmCards(1-tp,sg)
