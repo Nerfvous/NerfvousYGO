@@ -79,13 +79,14 @@ function s.cet(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     sc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
     local te=sc:GetCardEffect(code):GetLabelObject()
     local tg=te and te:GetTarget() or nil
+    e:SetLabel(te:GetLabel())
+    e:SetLabelObject(te:GetLabelObject())
+    e:SetProperty(te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and EFFECT_FLAG_CARD_TARGET or 0)
+    Duel.ClearTargetCard()
 	if tg then
-        e:SetLabel(te:GetLabel())
-        e:SetLabelObject(te:GetLabelObject())
-        e:SetProperty(te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and EFFECT_FLAG_CARD_TARGET or 0)
 		tg(e,tp,eg,ep,ev,re,r,rp,1)
-        e:SetLabelObject(te)
 	end
+    e:SetLabelObject(te)
 	Duel.ClearOperationInfo(0)
 end
 function s.ceop(e,tp,eg,ep,ev,re,r,rp)
