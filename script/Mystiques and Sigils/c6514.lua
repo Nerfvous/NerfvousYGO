@@ -96,6 +96,7 @@ function s.dstt(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     and Duel.IsExistingTarget(aux.FaceupFilter(Card.IsControler,1-tp),tp,0,LOCATION_ONFIELD,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
     local sg=Duel.SelectTarget(tp,aux.FaceupFilter(Card.IsControler,1-tp),tp,0,LOCATION_ONFIELD,1,g,nil)
+    Duel.SetTargetCard(sg)
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,#sg,0,0)
 end
 function s.dstop(e,tp,eg,ep,ev,re,r,rp)
