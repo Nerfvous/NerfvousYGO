@@ -70,7 +70,7 @@ function s.xdcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SendtoGrave(g,REASON_COST)
 end
 function s.xdfil(c,e)
-    return c:IsSetCard(0x28a) or c:IsSetCard(0x28c) and c:IsAbleToGrave()
+    return c:IsAbleToGrave() and (c:IsSetCard(0x28a) or c:IsSetCard(0x28c))
 end
 function s.xdt(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end
