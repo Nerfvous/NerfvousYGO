@@ -17,16 +17,15 @@ function s.initial_effect(c)
     local e2=e1:Clone()
     e2:SetCode(EVENT_SPSUMMON_SUCCESS)
     c:RegisterEffect(e2)
-    --Send 1 Spell to GY or target and destroy a monster
+    --Add 1 banished "Sigil" or target and banish a card from GY
     local e3=Effect.CreateEffect(c)
     e3:SetDescription(aux.Stringid(id,1))
     e3:SetType(EFFECT_TYPE_IGNITION)
     e3:SetCode(EVENT_FREE_CHAIN)
-    e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DESTROY)
+    e3:SetCategory(CATEGORY_TOHAND+CATEGORY_REMOVE)
     e3:SetRange(LOCATION_MZONE)
     e3:SetCountLimit(1)
     e3:SetCost(s.adbcost)
-    e3:SetCondition(s.adbcon)
     e3:SetTarget(s.adbt)
     e3:SetOperation(s.adbop)
     c:RegisterEffect(e3)
@@ -54,47 +53,49 @@ end
 function s.adbcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then
         local ct=0
-        if Duel.IsPlayerCanSendtoGrave(tp)
+        if not (Duel.IsPlayerCanSendtoGrave(tp)
         and Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil)
-        then local ct=1 end
-        if Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsAbleToRemove),tp,0,LOCATION_GRAVE,1,nil)
+        and Duel.IsExistingMatchingCard(aux.FaceupFilter(s.adbfil),tp,LOCATION_REMOVED,0,1,nil))
+        then return false else ct=ct+1 end
+        if Duel.IsExistingTarget(aux.FaceupFilter(Card.IsAbleToRemove),tp,0,LOCATION_GRAVE,1,nil)
+        and Duel.IsPlayerCanRemove(tp)
         then ct=ct+1 end
         e:SetLabel(ct)
         return ct~=0
     end
+    local ct=e:GetLabel()
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local g=Duel.SelectMatchingCard(tp,s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,ct,nil)
     e:SetLabel(#g)
     Duel.SendtoGrave(g,REASON_COST)
 end
-function s.adbcon(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.IsPlayerCanSendtoGrave(tp)
-end
 function s.adbfil(c,e)
-    return c:IsSetCard(0x28a) or c:IsSetCard(0x28c) and c:IsAbleToHand()
+    return c:IsAbleToHand() and (c:IsSetCard(0x28a) or c:IsSetCard(0x28c))
 end
 function s.adbt(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(aux.FaceupFilter(s.adbfil),tp,LOCATION_REMOVED,0,1,nil) end
-    Duel.SetTargetPlayer(tp)
-    Duel.SetTargetParam(e:GetLabel())
-    Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,e:GetLabel())
-    Duel.SetPossibleOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_MZONE)
+    if chk==0 then return true end
+    local lb=e:GetLabel()
+    if lb>=1 then
+    Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED) end
+    if lb>=2 then
+    e:SetProperty(EFFECT_FLAG_CARD_TARGET)
+    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE) end
 end
 function s.adbop(e,tp,eg,ep,ev,re,r,rp)
-    local p,lb=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+    local lb=e:GetLabel()
     local g=Duel.GetMatchingGroup(aux.FaceupFilter(s.adbfil),tp,LOCATION_REMOVED,0,nil)
     if lb>=1 and #g>0 then
-        --Send 1 banished "Mystique"or 1 "Sigil" to hand
+        --Add 1 banished "Mystique"or "Sigil" to hand
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
         local sc=g:Select(tp,1,1,nil)
         Duel.SendtoHand(sc,tp,REASON_EFFECT)
     end
-    --Target and destroy
+    --Target and banish
     if lb>=2
     and Duel.IsExistingTarget(aux.FaceupFilter(Card.IsAbleToRemove),tp,0,LOCATION_GRAVE,1,nil) then
         Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-        local sc=Duel.SelectTarget(tp,aux.FaceupFilter(Card.IsAbleToRemove),tp,0,LOCATION_MZONE,1,1,nil)
+        local sc=Duel.SelectTarget(tp,aux.FaceupFilter(Card.IsAbleToRemove),tp,0,LOCATION_GRAVE,1,1,nil)
         Duel.Remove(sc,POS_FACEUP,REASON_EFFECT)
     end
 end
