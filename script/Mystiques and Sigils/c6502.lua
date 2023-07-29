@@ -121,7 +121,7 @@ function s.xdt(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,1,tp,1) end
 end
 function s.xdfil(c,e,tp)
-    return c:IsSetCard(0x28a) or c:IsSetCard(0x28c) and c:IsAbleToHand()
+    return c:IsAbleToHand() and (c:IsSetCard(0x28a) or c:IsSetCard(0x28c))
 end
 function s.xdop(e,tp,eg,ep,ev,re,r,rp)
     local lb=e:GetLabel()
