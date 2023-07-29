@@ -125,7 +125,7 @@ function s.xdfil(c,e,tp)
 end
 function s.xdop(e,tp,eg,ep,ev,re,r,rp)
     local lb=e:GetLabel()
-    if lb>=1 and Duel.GetFieldGroupCount(p,LOCATION_DECK,0)>=3 then
+    if lb>=1 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 then
         --Excavate
         Duel.ConfirmDecktop(tp,3)
         local g=Duel.GetDecktopGroup(tp,3):Filter(s.xdfil,nil,e,tp)
