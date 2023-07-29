@@ -6,7 +6,6 @@ function s.initial_effect(c)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
     e1:SetCode(EVENT_SUMMON_SUCCESS)
-    e1:SetCategory(CATEGORY_SEARCH)
     e1:SetProperty(EFFECT_FLAG_DELAY)
     e1:SetRange(LOCATION_MZONE)
     e1:SetCountLimit(1,{id,0})
@@ -22,7 +21,6 @@ function s.initial_effect(c)
     e2:SetRange(LOCATION_MZONE)
     e2:SetCountLimit(1)
     e2:SetCost(s.spnscost)
-    e2:SetCondition(s.spnscon)
     e2:SetTarget(s.spnst)
     e2:SetOperation(s.spsnop)
     c:RegisterEffect(e2)
@@ -34,7 +32,6 @@ end
 function s.splt(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(s.spfil,tp,LOCATION_DECK,0,1,nil)
     and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
-    Duel.SetOperationInfo(0,CATEGORY_SEARCH,nil,1,tp,LOCATION_DECK)
 end
 function s.splop(e,tp,eg,ep,ev,re,r,rp) --fine tune it so that field spell is placed in the correct place
     local g=Duel.GetMatchingGroup(s.spfil,tp,LOCATION_DECK,0,nil)
@@ -66,9 +63,10 @@ end
 function s.spnscost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then
         local ct=0
-        if Duel.IsPlayerCanSendtoGrave(tp)
+        if not (Duel.IsPlayerCanSendtoGrave(tp)
         and Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil)
-        then ct=ct+1 end
+        and Duel.IsPlayerCanAdditionalSummon(tp))
+        then return false else ct=ct+1 end
         if Duel.IsPlayerCanSpecialSummon(tp)
         and Duel.IsExistingMatchingCard(s.monfil,tp,LOCATION_DECK,0,1,nil,e,tp)
         and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then ct=ct+1 end
@@ -81,20 +79,17 @@ function s.spnscost(e,tp,eg,ep,ev,re,r,rp,chk)
     e:SetLabel(#g)
     Duel.SendtoGrave(g,REASON_COST)
 end
-function s.spnscon(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.IsPlayerCanAdditionalSummon(tp)
-end
 function s.spnst(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsPlayerCanSummon(tp) end
-    Duel.SetTargetPlayer(tp)
-    Duel.SetTargetParam(e:GetLabel())
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,e:GetLabel())
+    if chk==0 then return true end
+    local ct=e:GetLabel()
+    if ct>=2 then
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK) end
 end
 function s.spnsmon(c)
     return c:IsLevelBelow(4) and c:IsSetCard(0x28a) and c:IsMonster()
 end
 function s.spsnop(e,tp,eg,ep,ev,re,r,rp)
-    local p,lb=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+    local lb=e:GetLabel()
     if lb>=1 and Duel.IsPlayerCanAdditionalSummon(tp) then
     -- Can Normal Summon 1 LIGHT monster in addition to your Normal Summon/Set
 	local e1=Effect.CreateEffect(e:GetHandler())
