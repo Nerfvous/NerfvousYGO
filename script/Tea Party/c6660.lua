@@ -74,13 +74,13 @@ function s.edfil(c)
 end
 function s.spt(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsPlayerCanSpecialSummon(tp)
-    and Duel.GetLocationCount(tp,LOCATION_MZONE)>=1
+    and Duel.GetLocationCountFromEx(tp)~=0
     and Duel.IsExistingMatchingCard(s.edfil,tp,LOCATION_EXTRA,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetMatchingGroup(s.edfil,tp,LOCATION_EXTRA,0,nil)
-    if #g<1 or Duel.GetLocationCount(tp,LOCATION_MZONE)<0 then return end
+    if #g<1 or Duel.GetLocationCountFromEx(tp)==0 then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
     local sc=g:Select(tp,1,1,nil):GetFirst()
     if sc and Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) then
