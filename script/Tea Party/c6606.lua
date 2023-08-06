@@ -122,8 +122,12 @@ function s.spcon(e,c)
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(aux.FaceupFilter(s.cfilter),c:GetControler(),LOCATION_PZONE,0,1,nil)
 end
-function s.atkfil(c,tp)
+function s.atkfil(c)
     return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_LIGHT)
+end
+function s.drawfil(c,tp)
+    return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_LIGHT)
+    and c:IsLevel(7) and c:IsControler(tp)
 end
 function s.gfil(c)
     return c:IsMonster()
@@ -136,7 +140,7 @@ function s.atktc(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
         and Duel.IsExistingMatchingCard(aux.FaceupFilter(s.gfil),tp,0,LOCATION_MZONE,1,nil)
     end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-    local tc=Duel.SelectTarget(tp,s.atkfil,tp,LOCATION_MZONE,0,1,1,nil,tp):GetFirst()
+    local tc=Duel.SelectTarget(tp,s.atkfil,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
     local dmgl=-(tc:GetAttack())
     local g=Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsMonster),tp,0,LOCATION_MZONE,nil)
     Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,g,#g,1-tp,dmgl)
@@ -156,8 +160,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
         ct:RegisterEffect(e1)
     end
     --Duel.IsExistingMatchingCard(f, player, s, o, count, ex, ...)
-    if Duel.IsExistingMatchingCard(aux.FaceupFilter(s.atkfil),tp,LOCATION_MZONE,0,1,nil)
-        and Duel.IsPlayerCanDraw(tp) then
+    if Duel.IsExistingMatchingCard(aux.FaceupFilter(s.drawfil,tp),tp,LOCATION_MZONE,0,1,nil) then
         Duel.BreakEffect()
         Duel.Draw(tp,1,REASON_EFFECT)
     end
