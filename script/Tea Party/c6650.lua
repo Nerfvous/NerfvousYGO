@@ -176,7 +176,8 @@ function s.rspfil(c)
     return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_PENDULUM)
 end
 function s.rspc(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsCanBeEffectTarget(e) and chkc:IsSpecialSummonable() and s.rspfil(chkc) end
+    if chkc then return chkc:IsCanBeEffectTarget(e) and chkc:IsSpecialSummonable()
+    and chkc:IsLocation(LOCATION_PZONE) and s.rspfil(chkc) end
     if chk==0 then return Duel.IsPlayerCanSpecialSummon(tp)
     and Duel.IsExistingTarget(aux.FaceupFilter(s.rspfil),tp,LOCATION_PZONE,0,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
@@ -186,8 +187,9 @@ end
 function s.rspop(e,tp,eg,ep,ev,re,r,rp)
     local tc=Duel.GetFirstTarget()
     local c=e:GetHandler()
-    if not tc and not tc:IsSpecialSummonable() and Duel.IsPlayerCanSpecialSummon(tp) then return end
-    if Duel.SpecialSummon(tc,SUMMON_TYPE_SPECIAL,tp,tp,false,false,POS_FACEUP) and c
+    if not tc or Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
+    if Duel.SpecialSummon(tc,SUMMON_TYPE_SPECIAL,tp,tp,false,false,POS_FACEUP)
+    and c:IsRelateToEffect(e)
     and Duel.CheckPendulumZones(tp)
     and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
         Duel.BreakEffect()
