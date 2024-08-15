@@ -11,7 +11,7 @@ function s.initial_effect(c)
     e1:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
     e1:SetRange(LOCATION_MZONE)
     e1:SetTargetRange(LOCATION_HAND,0)
-    e1:SetTarget(aux.FilterBoolFunction(Card.IsSetCard,0x29e))
+    e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x29e))
     c:RegisterEffect(e1)
     --Add Oberon
     local e2=Effect.CreateEffect(c)
