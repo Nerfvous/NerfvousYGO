@@ -91,10 +91,11 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function s.plctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:IsCanAddCounter(0x1500,1) end
-    if chk==0 then return Duel.IsExistingTarget(Card.IsCanAddCounter,tp,0,LOCATION_MZONE,1,nil,0x1500,1) end
+    if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE)
+        and chkc:IsMonster() and chkc:IsCanAddCounter(0x1500,1) end
+    if chk==0 then return Duel.IsExistingTarget(Card.IsCanAddCounter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler(),0x1500,1) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-    Duel.SelectTarget(tp,Card.IsCanAddCounter,tp,0,LOCATION_MZONE,1,2,nil,0x1500,1)
+    Duel.SelectTarget(tp,Card.IsCanAddCounter,tp,LOCATION_MZONE,LOCATION_MZONE,1,2,e:GetHandler(),0x1500,1)
 end
 function s.plcop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetTargetCards(e)

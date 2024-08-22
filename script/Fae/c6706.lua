@@ -27,11 +27,13 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 --Special summon operation
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-    if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+    local lc=Duel.GetLocationCount(tp,LOCATION_MZONE)
+    if lc<1 then return end
     local n=0
     if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,6704)
-    and Duel.IsExistingMatchingCard(s.filterc,tp,LOCATION_DECK,0,2,nil,e)
-    and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+        and Duel.IsExistingMatchingCard(s.filterc,tp,LOCATION_DECK,0,2,nil,e,tp)
+        and lc>1
+        and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
         n=1
     end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
