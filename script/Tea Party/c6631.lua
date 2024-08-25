@@ -43,8 +43,9 @@ s.listed_series={0x294}
 function s.cpenfil(c)
     return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x294)
 end
-function s.cdeckfil(c)
+function s.cdeckfil(c,code)
     return c:GetLevel()<=4 and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_PENDULUM)
+    and not c:IsCode(code)
 end
 function s.ctarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsCanBeEffectTarget(e) and chkc:IsLocation(LOCATION_PZONE)
@@ -71,10 +72,10 @@ function s.cop(e,tp,eg,ep,ev,re,r,rp)
         and Duel.IsExistingMatchingCard(s.cdeckfil,tp,LOCATION_DECK,0,1,nil)
         and Duel.CheckPendulumZones(tp) then
         Duel.BreakEffect()
-        local notc=Duel.GetMatchingGroup(s.cdeckfil,tp,LOCATION_DECK,0,tc:GetCode(),tp)
+        local g=Duel.GetMatchingGroup(s.cdeckfil,tp,LOCATION_DECK,0,nil,tc:GetCode())
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-        local ct=notc:Select(tp,1,1,tc:GetCode(),tp):GetFirst()
-        Duel.MoveToField(ct,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+        local sc=g:Select(tp,1,1,tc):GetFirst()
+        Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
         end
 end
 function s.ccond(e,tp)
