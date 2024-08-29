@@ -95,7 +95,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsMonster),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) then ty=ty | TYPE_TRAP end
 	if Duel.IsExistingTarget(Card.IsCanTurnSet,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) then ty=ty | TYPE_TRAP end
 	if ty==0 then return end
-	local sg=aux.SelectUnselectGroup(g:Filter(Card.IsType,nil,ty),e,tp,1,3,s.rescon,1,tp,HINTMSG_REMOVEXYZ)
+	local sg=aux.SelectUnselectGroup(g:Filter(Card.IsType,nil,ty),e,tp,1,1,s.rescon,1,tp,HINTMSG_REMOVEXYZ)
 	local lb=0
 	for tc in aux.Next(sg) do
 		lb=lb | tc:GetType()
