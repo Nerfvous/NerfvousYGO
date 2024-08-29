@@ -32,7 +32,7 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetHintTiming(TIMING_BATTLE_PHASE,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_START+TIMING_BATTLE_PHASE)
+	e3:SetHintTiming(TIMING_BATTLE_PHASE,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_PHASE)
 	e3:SetCountLimit(1,{id,1})
 	e3:SetCondition(function () return Duel.IsBattlePhase() end)
 	e3:SetTarget(s.tg)
@@ -93,7 +93,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	--if Duel.IsPlayerCanDraw(tp,1) then ty=ty | TYPE_SPELL end
 	if Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsMonster),tp,LOCATION_MZONE,0,1,c) then ty=ty | TYPE_SPELL end
 	if Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsMonster),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) then ty=ty | TYPE_TRAP end
-	if Duel.IsExistingTarget(s.postg,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) then ty=ty | TYPE_TRAP end
+	if Duel.IsExistingTarget(Card.IsCanTurnSet,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) then ty=ty | TYPE_TRAP end
 	if ty==0 then return end
 	local sg=aux.SelectUnselectGroup(g:Filter(Card.IsType,nil,ty),e,tp,1,3,s.rescon,1,tp,HINTMSG_REMOVEXYZ)
 	local lb=0
@@ -137,15 +137,11 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(indes,tp)
 	end
 	if lb & TYPE_TRAP ~=0 then
-        local sg=Duel.SelectTarget(tp,s.postg,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
+        local sg=Duel.SelectTarget(tp,Card.IsCanTurnSet,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
 		Duel.ChangePosition(sg,POS_FACEDOWN)
 	end
 end
---Can only target Abyssal Hunters
+--Can only target Abyssal Hunters except itself
 function s.filtg(e,c)
 	return c~=e:GetHandler()
-end
---Check if targetable, can change position and is face up
-function s.postg(e,c)
-	return c:IsCanBeEffectTarget(e) and c:IsCanChangePosition() and c:IsFaceup()
 end
