@@ -6,6 +6,7 @@ function s.initial_effect(c)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
+    e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
     c:RegisterEffect(e1)
     --Normal summon
     local e2=Effect.CreateEffect(c)
@@ -76,6 +77,14 @@ function s.moveop(e,tp,eg,ep,ev,re,r,rp)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
         local tz=math.log(Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,zone, check),2)
         Duel.MoveSequence(tc,tz)
+        local lnkrate=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_MZONE,0,nil,TYPE_LINK):GetSum(Card.GetLink)
+        local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
+        if tc:GetPreviousSequence()~=tc:GetSequence() and lnkrate>=3 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+            Duel.BreakEffect()
+            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+            local sc=g:Select(tp,1,1,nil)
+            Duel.Destroy(sc,REASON_EFFECT)
+        end
     end
 end
 function s.tdcon(e,tp,eg,ep,ev,re,r,rp)
@@ -100,8 +109,8 @@ function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     Duel.SetOperationInfo(0,CATEGORY_TODECK,sg1,2,tp,LOCATION_DECK)
 end
 function s.tdop(e,tp,eg,ep,ev,re,r,rp)
-    local tg=Duel.GetTargetCards(e):Filter(Card.IsRelateToEffect,nil,e)
-    if tg then
+    local tg=Duel.GetTargetCards(e)
+    if #tg>0 then
         Duel.SendtoDeck(tg,tp,SEQ_DECKBOTTOM,REASON_EFFECT)
     end
 end

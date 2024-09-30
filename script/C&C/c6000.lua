@@ -8,7 +8,7 @@ function s.initial_effect(c)
     e1:SetType(EFFECT_TYPE_QUICK_O)
     e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+    e1:SetHintTiming(0,TIMING_MAIN_END|TIMINGS_CHECK_MONSTER_E)
     e1:SetRange(LOCATION_MZONE)
     e1:SetCountLimit(1,{id,0})
     e1:SetCondition(s.spcon1)
@@ -87,7 +87,7 @@ end
 function s.spsumop2(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local g=Duel.GetMatchingGroup(s.filtermon1,tp,LOCATION_DECK,0,nil,e,tp)
-    if #g<=0 then return end
+    if #g<1 then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
     local tg=g:Select(tp,1,1,c)
     Duel.SendtoHand(tg,tp,REASON_EFFECT)

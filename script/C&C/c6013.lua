@@ -115,7 +115,7 @@ function s.tgfil(c,e)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
     local tc=Duel.GetFirstTarget()
-    if not tc or not tc:IsRelateToEffect(e) then return end
+    if not tc:IsRelateToEffect(e) then return end
     local c=e:GetHandler()
     local tctype=tc:IsCode(6002)
     if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0

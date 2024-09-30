@@ -27,7 +27,7 @@ function s.initial_effect(c)
     e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
     e2:SetCode(EVENT_FREE_CHAIN)
-    e2:SetHintTiming(0,TIMING_MAIN_END)
+    e2:SetHintTiming(0,TIMING_MAIN_END|TIMINGS_CHECK_MONSTER_E)
     e2:SetCountLimit(1)
     e2:SetRange(LOCATION_MZONE)
     e2:SetCondition(s.spcon)
@@ -56,7 +56,7 @@ end
 function s.posop(e,tp,eg,ep,ev,re,r,rp)
     local tc=Duel.GetFirstTarget()
     local c=e:GetHandler()
-    if tc and tc:IsRelateToEffect(e) and Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)~=0
+    if tc:IsRelateToEffect(e) and Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)~=0
         and c:GetMaterial():FilterCount(Card.IsCode,nil,6003) and Duel.GetMatchingGroupCount(s.posopfil,tp,LOCATION_MZONE,0,nil) then
             Duel.BreakEffect()
             local e1=Effect.CreateEffect(c)
@@ -88,7 +88,7 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local tc=Duel.GetTargetCards(e)
-    if not tc or not c then return end
-    Duel.Release(c,REASON_COST)
-    Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+    if #tc>0 and Duel.Release(c,REASON_COST)~=0 then
+        Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+    end
 end

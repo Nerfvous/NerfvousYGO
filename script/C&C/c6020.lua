@@ -40,40 +40,39 @@ function s.initial_effect(c)
 end
 s.listed_series={0x258}
 CNCMATS={[6011]=6000,[6012]=6001,[6013]=6002,[6014]=6003,[6015]=6004}
-function s.filter(c,e,tp)
-    if c:IsLocation(LOCATION_DECK) and not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return false end
-    return (c:IsLocation(LOCATION_DECK) or c:IsLocation(LOCATION_EXTRA)) and c:IsSetCard(0x258) and c:IsMonster()
-end
 --Special Summon from Deck
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) then return end
-    local dg=Duel.GetMatchingGroup(s.filter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,e,tp)
-    if not dg or not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then return end
-    local g1=dg:Clone()
-    local g2=Group.CreateGroup()
-    for k,v in pairs(CNCMATS) do
-        if dg:IsExists(Card.IsCode,1,nil,k) and dg:IsExists(Card.IsCode,1,nil,v) then
-            g2:Merge(g1:Filter(Card.IsCode,nil,k))
-            g2:Merge(g1:Filter(Card.IsCode,nil,v))
+    local dg=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,nil,0x258)
+    local xdg=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_EXTRA,0,nil,0x258)
+    local sg=Group.CreateGroup()
+    if #dg>0 and #xdg>0 then
+        for k,v in pairs(CNCMATS) do
+            if xdg:IsExists(Card.IsCode,1,nil,k) and dg:IsExists(Card.IsCode,1,nil,v) then
+                sg:Merge(xdg:Filter(Card.IsCode,nil,k))
+                sg:Merge(dg:Filter(Card.IsCode,nil,v))
+            end
         end
     end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-    local sg1=g2:FilterSelect(tp,Card.IsLocation,1,1,nil,LOCATION_EXTRA):GetFirst()
-    Duel.ConfirmCards(tp,sg1)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-    local sg2=g2:Filter(Card.IsLocation,nil,LOCATION_DECK):FilterSelect(tp,Card.IsCode,1,1,nil,CNCMATS[sg1:GetCode()])
-    Duel.SpecialSummon(sg2,0,tp,tp,false,false,POS_FACEUP)
-    --Cannot special summon, except warrior
-    local e1=Effect.CreateEffect(c)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-    e1:SetTargetRange(1,0)
-    e1:SetTarget(s.splimit)
-    e1:SetReset(RESET_PHASE+PHASE_END)
-    Duel.RegisterEffect(e1,tp)
-    aux.RegisterClientHint(c,EFFECT_FLAG_OATH,tp,1,0,aux.Stringid(id,1), nil)
+    if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+        local sg1=sg:FilterSelect(tp,Card.IsLocation,1,1,nil,LOCATION_EXTRA):GetFirst()
+        Duel.ConfirmCards(tp,sg1)
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+        local sg2=sg:Filter(Card.IsLocation,nil,LOCATION_DECK):FilterSelect(tp,Card.IsCode,1,1,nil,CNCMATS[sg1:GetCode()])
+        Duel.SpecialSummon(sg2,0,tp,tp,false,false,POS_FACEUP)
+        --Cannot special summon, except warrior
+        local e1=Effect.CreateEffect(c)
+        e1:SetType(EFFECT_TYPE_FIELD)
+        e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+        e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+        e1:SetTargetRange(1,0)
+        e1:SetTarget(s.splimit)
+        e1:SetReset(RESET_PHASE+PHASE_END)
+        Duel.RegisterEffect(e1,tp)
+        aux.RegisterClientHint(c,EFFECT_FLAG_OATH,tp,1,0,aux.Stringid(id,1), nil)
+    end
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return c:GetRace()~=RACE_WARRIOR
@@ -97,7 +96,7 @@ function s.bdcon1(e,tp,eg,ep,ev,re,r,rp)
     return eg and eg:IsExists(s.bdfil1,1,nil,tp,r)
 end
 function s.bdcon2(e,tp,eg,ep,ev,re,r,rp)
-    return re and re:GetHandler():IsSetCard(0x258) and eg:IsExists(s.bdfil2,1,nil,tp,r)
+    return re and re:GetHandler():IsSetCard(0x258) and eg:IsExists(s.bdfil2,1,nil,tp,r) and r==REASON_EFFECT
 end
 function s.bdtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and Duel.IsPlayerCanDraw(tp,1) end

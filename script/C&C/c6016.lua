@@ -14,6 +14,7 @@ function s.initial_effect(c)
     e1:SetCode(EVENT_FREE_CHAIN)
     e1:SetCountLimit(1,{id,0})
     e1:SetRange(LOCATION_MZONE)
+    e1:SetHintTiming(0,TIMING_MAIN_END|TIMINGS_CHECK_MONSTER_E)
     e1:SetCondition(s.movecon)
     e1:SetTarget(s.movetg)
     e1:SetOperation(s.moveop)
@@ -46,11 +47,11 @@ function s.moveop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if c:IsRelateToEffect(e) then
         c:MoveAdjacent(tp)
-        if c:GetPreviousSequence()~=c:GetSequence() and Duel.IsExistingMatchingCard(s.movefil,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp)
+        if c:GetPreviousSequence()~=c:GetSequence() and Duel.IsExistingMatchingCard(s.movefil,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp)
         and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
             Duel.BreakEffect()
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-            local tc=Duel.SelectMatchingCard(tp,s.movefil,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
+            local tc=Duel.SelectMatchingCard(tp,s.movefil,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp):GetFirst()
             Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
         end
     end

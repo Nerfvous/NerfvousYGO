@@ -1,4 +1,4 @@
---C&C 03: Toki
+--C&C 04: Toki
 --Scripted by Nerfvous
 local s,id=GetID()
 function s.initial_effect(c)
@@ -8,7 +8,7 @@ function s.initial_effect(c)
     e1:SetType(EFFECT_TYPE_QUICK_O)
     e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+    e1:SetHintTiming(0,TIMING_MAIN_END|TIMINGS_CHECK_MONSTER_E)
     e1:SetRange(LOCATION_MZONE)
     e1:SetCountLimit(1,{id,0})
     e1:SetCondition(s.spcon1)
@@ -28,6 +28,7 @@ function s.initial_effect(c)
     local e3=Effect.CreateEffect(c)
     e3:SetDescription(aux.Stringid(id,1))
     e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+    e3:SetProperty(EFFECT_FLAG_DELAY)
     e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e3:SetCode(EVENT_SPSUMMON_SUCCESS)
     e3:SetRange(LOCATION_MZONE)
@@ -79,7 +80,7 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.activatesp(c,tp)
-    return c:IsCode(6016) and c:GetActivateEffect():IsActivatable(tp,true)
+    return c:IsCode(6020) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
@@ -88,12 +89,13 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
     local sg=g:Select(tp,1,1,nil)
     Duel.SendtoHand(sg,tp,REASON_EFFECT)
     Duel.ConfirmCards(tp,sg)
+    local c=e:GetHandler()
     local fc=Duel.GetMatchingGroup(s.activatesp,tp,LOCATION_DECK,0,nil,tp)
     if #fc>0 and c:HasFlagEffect(id,1) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
         Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
         local sc=fc:Select(tp,1,1,nil):GetFirst()
-        Duel.ActivateFieldSpell(sc, e, tp, eg, ep, ev, re, r, rp)
+        Duel.ActivateFieldSpell(sc,e,tp,eg,ep,ev,re,r,rp)
     end
     Duel.ShuffleDeck(tp)
 end
