@@ -13,7 +13,7 @@ function s.initial_effect(c)
     e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e1:SetRange(LOCATION_PZONE)
     e1:SetCountLimit(1,{id,0})
-    e1:SetCondition(Duel.IsMainPhase)
+    e1:SetCondition(s.condition)
 	e1:SetTarget(s.pentg)
     e1:SetOperation(s.penop)
     c:RegisterEffect(e1)
@@ -55,6 +55,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 s.listed_series={0x294}
+function s.condition(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	return Duel.IsMainPhase()
+end
 function s.tg(e,c)
     return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsFaceup()
 end

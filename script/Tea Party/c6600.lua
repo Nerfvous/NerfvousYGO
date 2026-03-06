@@ -13,7 +13,7 @@ function s.initial_effect(c)
     e1:SetProperty(EFFECT_FLAG_CARD_TARGET) --SetProperty changes the property of the effect. EFFECT_FLAG_CARD_TARGET makes it so that the effect only affects face-up cards
     e1:SetRange(LOCATION_PZONE)
     e1:SetCountLimit(1,{id,0}) --Limits the amount of times the effect can be triggered per turn which in this case is hard 1-ce per turn heheh
-    e1:SetCondition(Duel.IsMainPhase)
+    e1:SetCondition(s.condition)
 	e1:SetTarget(s.pentg)
     e1:SetOperation(s.penop)
     c:RegisterEffect(e1)
@@ -86,7 +86,7 @@ function s.penop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local tc=Duel.GetFirstTarget()
-    if not tc:IsRelateToEffect(e) and not Duel.CheckPendulumZones(tp) then return end
+    if not tc:IsRelateToEffect(e) or not Duel.CheckPendulumZones(tp) then return end
     Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
@@ -110,7 +110,7 @@ function s.trapop(e,tp,eg,ep,ev,re,r,rp)
         Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
     end
 end    
-function s.atkcond(e,c)
+function s.atkcond(e)
 	return Duel.GetMatchingGroupCount(Card.IsMonster,e:GetHandler():GetControler(),LOCATION_MZONE,0,nil)
 	<Duel.GetMatchingGroupCount(Card.IsMonster,e:GetHandler():GetControler(),0,LOCATION_MZONE,nil)
 end
@@ -128,7 +128,6 @@ function s.targetplop(e,tp,eg,ep,ev,re,r,rp)
     if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
         local sg=g:Select(tp,1,1,nil)
-        Duel.BreakEffect()
         Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
     end
 end
